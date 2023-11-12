@@ -14,10 +14,7 @@ namespace EggWars2D.Controllers
 
         void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.collider.TryGetComponent(out PlayerController playerController))
-            {
-                Bounce(other.GetContact(0).normal);
-            }
+            Bounce(other.GetContact(0).normal);
         }
 
         void Bounce(Vector3 normal)
