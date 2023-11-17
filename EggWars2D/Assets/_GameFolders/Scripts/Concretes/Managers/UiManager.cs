@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using EggWars2D.Enums;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,31 +21,36 @@ namespace EggWars2D.Managers
             _waitingObject.SetActive(false);
         }
 
-        void OnEnable()
+        async void OnEnable()
         {
             _hostButton.onClick.AddListener(HandleOnHostButtonClicked);
             _clientButton.onClick.AddListener(HandleOnClientButtonClicked);
+
+            while (GameManager.Instance == null) await UniTask.Yield();
+
+            GameManager.Instance.OnGameStateChanged += HandleOnGameStateChanged;
         }
 
         void OnDisable()
         {
             _hostButton.onClick.RemoveListener(HandleOnHostButtonClicked);
             _clientButton.onClick.RemoveListener(HandleOnClientButtonClicked);
+            GameManager.Instance.OnGameStateChanged -= HandleOnGameStateChanged;
         }
 
         void HandleOnHostButtonClicked()
         {
-            SetActiveWaitingUi();
+            ShowWaitingUi();
             NetworkManager.Singleton.StartHost();
         }
 
         void HandleOnClientButtonClicked()
         {
-            SetActiveWaitingUi();
+            ShowWaitingUi();
             NetworkManager.Singleton.StartClient();
         }
 
-        private void SetActiveWaitingUi()
+        private void ShowWaitingUi()
         {
             _waitingObject.SetActive(true);
             _connectionObject.SetActive(false);
@@ -56,6 +62,22 @@ namespace EggWars2D.Managers
             _waitingObject.SetActive(false);
             _connectionObject.SetActive(false);
             _gameObject.SetActive(true);
+        }
+        
+        void HandleOnGameStateChanged(StateEnum gameState)
+        {
+            switch (gameState)
+            {
+                case StateEnum.Game:
+                    SetActiveGameUi();
+                    break;
+                case StateEnum.Win:
+                    break;
+                case StateEnum.Lose:
+                    break;
+                default:
+                    break;
+            }
         }
     }    
 }
