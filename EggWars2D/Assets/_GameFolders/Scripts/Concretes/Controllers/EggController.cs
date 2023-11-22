@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace EggWars2D.Controllers
@@ -7,7 +8,8 @@ namespace EggWars2D.Controllers
         [SerializeField] Rigidbody2D _rigidbody2D;
         [SerializeField] float _bounceVelocity = 5f;
 
-        bool _isAlive = true;
+        bool _isAlive;
+        float _gravityScale;
 
         public static event System.Action OnHit;
         public static event System.Action OnFellWater;
@@ -15,6 +17,17 @@ namespace EggWars2D.Controllers
         void OnValidate()
         {
             if (_rigidbody2D == null) GetComponent<Rigidbody2D>();
+        }
+
+        async void Start()
+        {
+            _isAlive = true;
+            _gravityScale = _rigidbody2D.gravityScale;
+            _rigidbody2D.gravityScale = 0f;
+
+            await UniTask.Delay(2000);
+
+            _rigidbody2D.gravityScale = _gravityScale;
         }
 
         void OnCollisionEnter2D(Collision2D other)
