@@ -50,8 +50,9 @@ namespace EggWars2D.Managers
             }
 
             UpdateScoreClientRpc(_clientScore,_hostScore);
+            CheckForEndGame();
         }
-        
+
         [ClientRpc]
         void UpdateScoreClientRpc(int clientScore, int hostScore)
         {
@@ -79,6 +80,28 @@ namespace EggWars2D.Managers
         void ResetScores()
         {
             UpdateScoreClientRpc(0, 0);
+        }
+        
+        void CheckForEndGame()
+        {
+            if (_hostScore >= 3)
+            {
+                //host win
+            }
+            else if (_clientScore >= 3)
+            {
+                //client win
+            }
+            else
+            {
+                //Respawn ball
+                ReuseEgg();
+            }
+        }
+
+        void ReuseEgg()
+        {
+            EggManager.Instance.ReuseEgg();
         }
     }
 }

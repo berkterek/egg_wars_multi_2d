@@ -1,3 +1,4 @@
+using System;
 using EggWars2D.Controllers;
 using EggWars2D.Enums;
 using Unity.Netcode;
@@ -8,6 +9,13 @@ namespace EggWars2D.Managers
     public class EggManager : NetworkBehaviour
     {
         [SerializeField] EggController _prefab;
+
+        public static EggManager Instance { get; private set; }
+
+        void Awake()
+        {
+            Instance = this;
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -28,6 +36,15 @@ namespace EggWars2D.Managers
                     break;
             }
         }
+        
+        public void ReuseEgg()
+        {
+            if (!IsServer) return;
+
+            if (transform.childCount <= 0) return;
+
+            transform.GetChild(0).GetComponent<EggController>().Reuse();
+        }
 
         void SpawnEgg()
         {
@@ -36,6 +53,7 @@ namespace EggWars2D.Managers
             var eggInstance = Instantiate(_prefab, Vector3.up * 5f, Quaternion.identity);
 
             eggInstance.GetComponent<NetworkObject>().Spawn();
+            eggInstance.transform.SetParent(transform);
             //SpawnEggServerRpc();
         }
 

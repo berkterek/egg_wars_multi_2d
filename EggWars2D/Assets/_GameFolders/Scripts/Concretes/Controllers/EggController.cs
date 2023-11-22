@@ -9,7 +9,6 @@ namespace EggWars2D.Controllers
         [SerializeField] float _bounceVelocity = 5f;
 
         bool _isAlive;
-        float _gravityScale;
 
         public static event System.Action OnHit;
         public static event System.Action OnFellWater;
@@ -19,15 +18,11 @@ namespace EggWars2D.Controllers
             if (_rigidbody2D == null) GetComponent<Rigidbody2D>();
         }
 
-        async void Start()
+        void Start()
         {
             _isAlive = true;
-            _gravityScale = _rigidbody2D.gravityScale;
-            _rigidbody2D.gravityScale = 0f;
-
-            await UniTask.Delay(2000);
-
-            _rigidbody2D.gravityScale = _gravityScale;
+            
+            WaitAndFallAsync();
         }
 
         void OnCollisionEnter2D(Collision2D other)
@@ -55,6 +50,26 @@ namespace EggWars2D.Controllers
         void Bounce(Vector3 normal)
         {
             _rigidbody2D.velocity = normal * _bounceVelocity;
+        }
+
+        private async void WaitAndFallAsync()
+        {
+            var gravityScale = _rigidbody2D.gravityScale;
+            _rigidbody2D.gravityScale = 0f;
+
+            await UniTask.Delay(2000);
+
+            _rigidbody2D.gravityScale = gravityScale;
+        }
+
+        public void Reuse()
+        {
+            transform.position = Vector3.up * 5f;
+            _rigidbody2D.velocity = Vector3.zero;
+            _rigidbody2D.angularVelocity = 0f;
+            _isAlive = true;
+            
+            WaitAndFallAsync();            
         }
     }
 }
