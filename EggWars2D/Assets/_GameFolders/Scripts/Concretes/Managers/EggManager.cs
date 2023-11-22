@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using EggWars2D.Controllers;
 using EggWars2D.Enums;
 using Unity.Netcode;
@@ -9,13 +10,15 @@ namespace EggWars2D.Managers
     {
         [SerializeField] EggController _prefab;
 
+        EggController _eggController;
+
         public static EggManager Instance { get; private set; }
 
         void Awake()
         {
             if (Instance == null)
             {
-                Instance = this;    
+                Instance = this;
             }
             else
             {
@@ -23,12 +26,17 @@ namespace EggWars2D.Managers
             }
         }
 
-        public override void OnNetworkSpawn()
+        async void OnEnable()
         {
+            while (GameManager.Instance == null)
+            {
+                await UniTask.Yield();
+            }
+
             GameManager.Instance.OnGameStateChanged += HandleOnGameStateChanged;
         }
 
-        public override void OnNetworkDespawn()
+        void OnDisable()
         {
             GameManager.Instance.OnGameStateChanged -= HandleOnGameStateChanged;
         }
@@ -40,9 +48,15 @@ namespace EggWars2D.Managers
                 case StateEnum.Game:
                     SpawnEgg();
                     break;
+                case StateEnum.Lose:
+                    DeleteEgg();
+                    break;
+                case StateEnum.Win:
+                    DeleteEgg();
+                    break;
             }
         }
-        
+
         public void ReuseEgg()
         {
             if (!IsServer) return;
@@ -54,13 +68,23 @@ namespace EggWars2D.Managers
 
         void SpawnEgg()
         {
-            if (!IsServer) return;
+            if (!IsServer || _eggController != null) return;
 
             var eggInstance = Instantiate(_prefab, Vector3.up * 5f, Quaternion.identity);
 
             eggInstance.GetComponent<NetworkObject>().Spawn();
             eggInstance.transform.SetParent(transform);
+            _eggController = eggInstance;
             //SpawnEggServerRpc();
+        }
+
+        void DeleteEgg()
+        {
+            if (!IsServer) return;
+            
+            _eggController.GetComponent<NetworkObject>().Despawn();
+            Destroy(_eggController);
+            _eggController = null;
         }
 
         // [ServerRpc]
@@ -74,5 +98,5 @@ namespace EggWars2D.Managers
         // {
         //     var eggInstance = Instantiate(_prefab, Vector3.up * 5f, Quaternion.identity);
         // }
-    }    
+    }
 }

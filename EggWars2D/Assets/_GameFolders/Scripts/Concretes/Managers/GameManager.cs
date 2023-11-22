@@ -18,7 +18,7 @@ namespace EggWars2D.Managers
         {
             if (Instance == null)
             {
-                Instance = this;    
+                Instance = this;  
             }
             else
             {
@@ -35,11 +35,14 @@ namespace EggWars2D.Managers
 
         public override void OnNetworkSpawn()
         {
+            if (!IsServer) return;
             NetworkManager.OnServerStarted += HandleOnServerStarted;
         }
-
-        public override void OnNetworkDespawn()
+        
+        void OnDisable()
         {
+            if (!IsServer) return;
+            
             NetworkManager.OnServerStarted -= HandleOnServerStarted;
             NetworkManager.Singleton.OnClientConnectedCallback -= HandleOnClientConnectedCallback;
         }
