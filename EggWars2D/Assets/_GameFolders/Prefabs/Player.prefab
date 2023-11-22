@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 8671783378681443638}
   - component: {fileID: 1859499863499726039}
   - component: {fileID: -7165979809438697221}
-  - component: {fileID: 6132256139047469511}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -252,15 +251,3 @@ MonoBehaviour:
   _collider: {fileID: 8671783378681443638}
   _spriteRenderers:
   - {fileID: 702568635270440519}
---- !u!114 &6132256139047469511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5216592912970274351}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cf705078124ea24b8717413f8f7d500, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

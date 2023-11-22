@@ -1,3 +1,4 @@
+using System;
 using EggWars2D.Controllers;
 using EggWars2D.Enums;
 using EggWars2D.Managers;
@@ -8,7 +9,22 @@ namespace EggWars2D.Handlers
     public class PlayerSelectorHandler : NetworkBehaviour
     {
         bool _isHostTurn;
-        
+
+        public static PlayerSelectorHandler Instance { get; private set; }
+        public bool IsHostTurn => _isHostTurn;
+
+        void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
+        }
+
         public override void OnNetworkSpawn()
         {
             NetworkManager.OnServerStarted += HandleOnNetworkStarted;
