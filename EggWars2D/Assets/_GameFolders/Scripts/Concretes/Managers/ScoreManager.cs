@@ -87,15 +87,53 @@ namespace EggWars2D.Managers
             if (_hostScore >= 3)
             {
                 //host win
+                HostWin();
             }
             else if (_clientScore >= 3)
             {
                 //client win
+                ClientWin();
             }
             else
             {
                 //Respawn ball
                 ReuseEgg();
+            }
+        }
+
+        void HostWin()
+        {
+            HostWinClientRpc();
+        }
+
+        [ClientRpc]
+        void HostWinClientRpc()
+        {
+            if (IsServer)
+            {
+                GameManager.Instance.SetGameState(StateEnum.Win);
+            }
+            else
+            {
+                GameManager.Instance.SetGameState(StateEnum.Lose);
+            }
+        }
+
+        void ClientWin()
+        {
+            ClientWinClientRpc();
+        }
+
+        [ClientRpc]
+        void ClientWinClientRpc()
+        {
+            if (IsServer)
+            {
+                GameManager.Instance.SetGameState(StateEnum.Lose);
+            }
+            else
+            {
+                GameManager.Instance.SetGameState(StateEnum.Win);
             }
         }
 

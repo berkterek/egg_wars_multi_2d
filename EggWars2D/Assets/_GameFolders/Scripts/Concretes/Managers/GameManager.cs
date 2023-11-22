@@ -1,8 +1,6 @@
-using Cysharp.Threading.Tasks;
 using EggWars2D.Enums;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace EggWars2D.Managers
 {
@@ -13,22 +11,26 @@ namespace EggWars2D.Managers
         StateEnum _gameState;
         int _connectedPlayers;
 
-        public event System.Action<StateEnum> OnGameStateChanged; 
+        public event System.Action<StateEnum> OnGameStateChanged;
         public static GameManager Instance { get; private set; }
-        
+
         void Awake()
         {
             if (Instance == null)
             {
-                Instance = this;
-                DontDestroyOnLoad(this.gameObject);
+                Instance = this;    
             }
             else
             {
                 Destroy(this.gameObject);
             }
-            
+
             Application.targetFrameRate = _targetFrame;
+        }
+
+        void Start()
+        {
+            _gameState = StateEnum.Menu;
         }
 
         public override void OnNetworkSpawn()
@@ -42,18 +44,12 @@ namespace EggWars2D.Managers
             NetworkManager.Singleton.OnClientConnectedCallback -= HandleOnClientConnectedCallback;
         }
 
-        async void Start()
-        {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(1));
-            await SceneManager.LoadSceneAsync(1);
-            _gameState = StateEnum.Menu;
-        }
-        
         void HandleOnServerStarted()
         {
             if (!IsServer) return;
 
             NetworkManager.Singleton.OnClientConnectedCallback += HandleOnClientConnectedCallback;
+            NetworkManager.Singleton.OnServerStopped += HandleOnServerStopped;
         }
 
         void HandleOnClientConnectedCallback(ulong clientId)
@@ -66,6 +62,11 @@ namespace EggWars2D.Managers
             }
         }
 
+        void HandleOnServerStopped(bool value)
+        {
+            _connectedPlayers = 0;
+        }
+
         void StartGame()
         {
             StartGameClientRpc();
@@ -74,8 +75,13 @@ namespace EggWars2D.Managers
         [ClientRpc]
         void StartGameClientRpc()
         {
-            _gameState = StateEnum.Game;
+            SetGameState(StateEnum.Game);
+        }
+
+        public void SetGameState(StateEnum stateEnum)
+        {
+            _gameState = stateEnum;
             OnGameStateChanged?.Invoke(_gameState);
         }
-    }    
+    }
 }

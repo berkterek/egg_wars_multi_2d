@@ -1,4 +1,3 @@
-using System;
 using EggWars2D.Controllers;
 using EggWars2D.Enums;
 using Unity.Netcode;
@@ -14,7 +13,14 @@ namespace EggWars2D.Managers
 
         void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;    
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
         }
 
         public override void OnNetworkSpawn()

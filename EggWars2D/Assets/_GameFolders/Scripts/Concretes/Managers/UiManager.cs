@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using EggWars2D.Enums;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace EggWars2D.Managers
@@ -11,6 +12,8 @@ namespace EggWars2D.Managers
         [SerializeField] GameObject _connectionObject;
         [SerializeField] GameObject _waitingObject;
         [SerializeField] GameObject _gameObject;
+        [SerializeField] GameObject _winObject;
+        [SerializeField] GameObject _loseObject;
         [SerializeField] Button _hostButton;
         [SerializeField] Button _clientButton;
 
@@ -19,6 +22,8 @@ namespace EggWars2D.Managers
             _connectionObject.SetActive(true);
             _gameObject.SetActive(false);
             _waitingObject.SetActive(false);
+            _winObject.SetActive(false);
+            _loseObject.SetActive(false);
         }
 
         async void OnEnable()
@@ -35,6 +40,8 @@ namespace EggWars2D.Managers
         {
             _hostButton.onClick.RemoveListener(HandleOnHostButtonClicked);
             _clientButton.onClick.RemoveListener(HandleOnClientButtonClicked);
+
+            if (GameManager.Instance == null) return;
             GameManager.Instance.OnGameStateChanged -= HandleOnGameStateChanged;
         }
 
@@ -63,6 +70,24 @@ namespace EggWars2D.Managers
             _connectionObject.SetActive(false);
             _gameObject.SetActive(true);
         }
+
+        private void ShowWinPanel()
+        {
+            _gameObject.SetActive(false);
+            _winObject.SetActive(true);
+        }
+
+        private void ShowLosePanel()
+        {
+            _gameObject.SetActive(false);
+            _loseObject.SetActive(true);
+        }
+
+        public async void NextButton()
+        {
+            await SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+            NetworkManager.Singleton.Shutdown();
+        }
         
         void HandleOnGameStateChanged(StateEnum gameState)
         {
@@ -72,10 +97,10 @@ namespace EggWars2D.Managers
                     SetActiveGameUi();
                     break;
                 case StateEnum.Win:
+                    ShowWinPanel();
                     break;
                 case StateEnum.Lose:
-                    break;
-                default:
+                    ShowLosePanel();
                     break;
             }
         }
