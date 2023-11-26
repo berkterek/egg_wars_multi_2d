@@ -5,41 +5,45 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
-public class IpManager : MonoBehaviour
+namespace EggWars2D.Managers
 {
-    [SerializeField] TMP_InputField _ipInputField;
-    [SerializeField] TMP_Text _ipText;
 
-    public static IpManager Instance;
-
-    void Awake()
+    public class IpManager : MonoBehaviour
     {
-        if (Instance == null)
+        [SerializeField] TMP_InputField _ipInputField;
+        [SerializeField] TMP_Text _ipText;
+
+        public static IpManager Instance;
+
+        void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this.gameObject);
+            }
         }
-        else
+
+        void Start()
         {
-            Destroy(this.gameObject);
+            _ipText.SetText(GetLocalPv4());
+
+            UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            utp.SetConnectionData(GetLocalPv4(), 7777);
         }
-    }
 
-    void Start()
-    {
-        _ipText.SetText(GetLocalPv4());
+        string GetLocalPv4()
+        {
+            return Dns.GetHostEntry(Dns.GetHostName()).AddressList
+                .First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
+        }
 
-        UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        utp.SetConnectionData(GetLocalPv4(),7777);
-    }
-
-    string GetLocalPv4()
-    {
-        return Dns.GetHostEntry(Dns.GetHostName()).AddressList
-            .First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
-    }
-
-    public string GetInputIp()
-    {
-        return _ipInputField.text;
+        public string GetInputIp()
+        {
+            return _ipInputField.text;
+        }
     }
 }

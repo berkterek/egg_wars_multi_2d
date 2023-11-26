@@ -46,21 +46,24 @@ namespace EggWars2D.Managers
             GameManager.Instance.OnGameStateChanged -= HandleOnGameStateChanged;
         }
 
-        void HandleOnHostButtonClicked()
+        async void HandleOnHostButtonClicked()
         {
             ShowWaitingUi();
-            NetworkManager.Singleton.StartHost();
+            //NetworkManager.Singleton.StartHost();
+
+            await RelayManager.Instance.ConfigureTransportAdnStartAsHostAsync();
         }
 
-        void HandleOnClientButtonClicked()
+        async void HandleOnClientButtonClicked()
         {
             ShowWaitingUi();
 
-            string ipAddress = IpManager.Instance.GetInputIp();
-            UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            utp.SetConnectionData(ipAddress,7777);
-            
-            NetworkManager.Singleton.StartClient();
+            // string ipAddress = IpManager.Instance.GetInputIp();
+            // UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            // utp.SetConnectionData(ipAddress,7777);
+            // NetworkManager.Singleton.StartClient();
+
+            await RelayManager.Instance.ConfigureTransportAdnStartAsClientAsync();
         }
 
         private void ShowWaitingUi()
