@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using EggWars2D.Enums;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -54,6 +55,11 @@ namespace EggWars2D.Managers
         void HandleOnClientButtonClicked()
         {
             ShowWaitingUi();
+
+            string ipAddress = IpManager.Instance.GetInputIp();
+            UnityTransport utp = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            utp.SetConnectionData(ipAddress,7777);
+            
             NetworkManager.Singleton.StartClient();
         }
 

@@ -38,6 +38,7 @@ namespace EggWars2D.Controllers
 
         void OnTriggerEnter2D(Collider2D other)
         {
+            Debug.Log(_isAlive);
             if (!_isAlive) return;
 
             if (other.CompareTag("Water"))

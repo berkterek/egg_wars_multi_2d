@@ -40,6 +40,7 @@ namespace EggWars2D.Managers
 
         void HandleOnFellWater()
         {
+            Debug.Log(nameof(HandleOnFellWater));
             if (PlayerSelectorHandler.Instance.IsHostTurn)
             {
                 _clientScore++;
