@@ -17,6 +17,7 @@ namespace EggWars2D.Managers
         [SerializeField] GameObject _loseObject;
         [SerializeField] Button _hostButton;
         [SerializeField] Button _clientButton;
+        [SerializeField] Button _playButton;
 
         void Start()
         {
@@ -29,6 +30,7 @@ namespace EggWars2D.Managers
 
         async void OnEnable()
         {
+            _playButton.onClick.AddListener(HandleOnPlayButtonClicked);
             _hostButton.onClick.AddListener(HandleOnHostButtonClicked);
             _clientButton.onClick.AddListener(HandleOnClientButtonClicked);
 
@@ -39,6 +41,7 @@ namespace EggWars2D.Managers
 
         void OnDisable()
         {
+            _playButton.onClick.RemoveListener(HandleOnPlayButtonClicked);
             _hostButton.onClick.RemoveListener(HandleOnHostButtonClicked);
             _clientButton.onClick.RemoveListener(HandleOnClientButtonClicked);
 
@@ -64,6 +67,13 @@ namespace EggWars2D.Managers
             // NetworkManager.Singleton.StartClient();
 
             await RelayManager.Instance.ConfigureTransportAdnStartAsClientAsync();
+        }
+        
+        void HandleOnPlayButtonClicked()
+        {
+            ShowWaitingUi();
+
+            MatchMakingManager.Instance.PlayButtonCallback();
         }
 
         private void ShowWaitingUi()
